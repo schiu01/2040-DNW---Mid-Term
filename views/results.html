@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/smarthome.css">
+    <title>Smart Home! - Add New Device</title>
+</head>
+<style>
+
+</style>
+
+<body class="all">
+    <div class=menu>
+        <ul class="menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="add_device.html">Add Device</a></li>
+            <li><a href="device_status.html">Device Status</a></li>
+            <li><a href="update_device.html">Update Device</a></li>
+            <li><a href="delete_device.html">Delete Device</a></li>
+
+
+        </ul>
+
+    </div>
+
+<P>
+<table width="50%" border="1" cellpadding=10, cellspacing=0 color="#CCCCCC" margintop=5>
+    <%
+    if(result == 0) {
+        // OK
+        %>
+        <TR><TH colspan=2>Device: <%=data[0].standard_device_name%> Successfully <%=action%> </TH></TR>
+
+        <%
+        data.forEach((item)=> {
+    %>
+            <TR><TD><%=item.device_reading_type_name%></TD>
+                <% if((item.device_reading_data_type == "t") || (item.device_reading_data_type == "b")) {%>
+                        <TD><%=item.text_reading%></TD>
+                <%} else {%>
+                        <TD><%=item.device_reading%></TD>
+                <%}%>
+                
+                 </TR>
+
+
+    <%
+        })
+    } else {
+        %>
+        <TR>
+            <TD>There was an error trying to add device!</TD>
+        </TR>
+        <TR>
+            <TD><%=errmsg%></TD>
+        </TR>
+    
+    <%
+    }
+    %>
+</table>
+</P>
+
+</body>

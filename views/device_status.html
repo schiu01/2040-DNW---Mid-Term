@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/smarthome.css">
+    <title>Smart Home! - Device Status</title>
+</head>
+<script>
+    function updateReading(id){
+        var elem = document.getElementById("deviceReading")
+        elem.innerHTML = "Loading Device Reading..."
+        var html = ""
+        fetch("http://localhost:8089/device_status.html?device_id="+id).then(response => response.json()).then(
+            result=> {
+                
+                
+                html = "<div class='deviceStatusReadingMainGrid'>";
+                Object.keys(result).forEach((item) => {
+                    if (item == "Temperature") {
+                        html = html + "<div class='deviceStatusReadingGrid'><div class='deviceStatusReadingGridItem'>Temperature</div><div style='margin: 10px;'><img src='/static/thermometer.png' width=100 height=100 valign=middle><font size='+3em'>" + result[item].replace(" C", "&#xb0;c") + "</font></div></div>";
+                    } else if (item == "Humidity") {
+                       html = html + "<div class='deviceStatusReadingGrid'><div class='deviceStatusReadingGridItem'>Relative Humidity</div><div style='margin: 10px;'><img src='/static/humidity.png' width=100 height=100 valign=middle><font size='+3em'>" + result[item].replace(" C", "&#xb0;c") + "</font></div></div>";
+                    } else if ((item == "Status" || item == "Smoke Detect")) {
+                        html = html + "<div class='deviceStatusReadingGrid' ";
+
+                        if(result[item] == "On" || result[item] == "Open" || result[item] == "Clear") {
+                            html = html + "style='background-color: #00FF00;'>";
+                        } else if (result[item] == "Off" || result[item] == "Closed" || result[item] == "Smoke") {
+                            html = html + "style='background-color: #FF0000;'>";
+                        } else {
+                            html = html + "style='background-color: #000000;'>";
+                        }
+                        html = html + "<div class='deviceStatusReadingGridItem'>" + item + "</div><div style='margin: 10px; text-align: center'><font size='+3em'>" + result[item] + "</font></div></div > ";
+                            
+                    } else if (item == "Battery Indicator") {
+                        var battery_reading = result[item].split(" "); // <number> %
+                        var reading = parseInt(battery_reading[0]);
+                        var size =reading;
+
+                        // Color of battery - green to red
+                        // https://stackoverflow.com/questions/7128675/from-green-to-red-color-depend-on-percentage/7128796
+                        const g = 255 * reading/100 ;
+                        const r = 255 - g ;
+                        color = 'rgb(' + r + ',' + g + ',0)';
+                        var battery_div = ' <div class="batteryContainer"><div class="batteryOuter"><div id="batteryLevel" style="width: '+ size +'px; background-color: ' + color + '; "></div></div><div class="batteryBump"></div></div>';
+                        html = html + "<div class='deviceStatusReadingGrid' ><div class='deviceStatusReadingGridItem'>Battery Indicator</div><div style='margin: 10px;'>" + battery_div + '<div style="text-align: center">'+ result[item]+ '</div>' +"</div></div>";
+                        
+                        
+                    }
+                    
+                    else {
+                        html = html + "<div class='deviceStatusReadingGrid'><div class='deviceStatusReadingGridItem'>" + item + "</div><div style='margin: 10px; text-align: center'><font size='+3em'>" + result[item] + "</font></div></div>";
+                    }
+                    //
+                    
+                })
+                
+                
+                
+                
+            }
+        ).then ((err) =>
+            {
+                var elem = document.getElementById("deviceReading");
+                elem.innerHTML = html;
+            }
+
+        );
+
+    }
+</script>
+
+<body>
+    <div class=menu>
+        <ul class="menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="add_device.html">Add New Device</a></li>
+            <li><a class="active" href="device_status.html">Device Status</a></li>
+            <li><a href="update_device.html">Update Device</a></li>
+            <li><a href="delete_device.html">Delete Device</a></li>
+
+
+        </ul>
+
+    </div>
+    <P>
+<div id="deviceStatusGrid">
+<div id="content">
+    
+    <%Object.keys(data).forEach((item) => { 
+        console.log(data[item]);
+        
+        var device_ids = Object.keys(data[item]);
+        %>
+        
+    <a
+        href='#nav_<%=item%>'><span><%=item%> &#x21E2;</span></a>
+    <div class="expandable" id='nav_<%=item%>'>
+        
+        <UL>
+            
+            <%for(var i=0; i< device_ids.length; i++) {
+                %>
+                
+            <LI>
+                
+                <div class="deviceStatusItem" onclick="updateReading(<%=device_ids[i]%>)"> &nbsp; &nbsp; <%=data[item][device_ids[i]]["location"]%></div>
+                
+            </LI>
+            <% } %>
+
+</UL>
+    </div>
+    
+    <%})%>
+</div>
+<div id="deviceReading">
+    Select device on the left to check their status.
+</div>
+</div>
+
+
+</body>

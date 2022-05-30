@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/smarthome.css">
+    <title>Smart Home! - Add New Device</title>
+</head>
+<style>
+
+</style>
+<script>
+
+    // Javascript to redirectoy add page with id as input.
+    function showFeatures(id) {
+        window.location.replace("./add_device.html?showfeatures=1&id=" + id);
+    }
+
+
+    // form validation function.
+    // checks if the tags have max attribute, and checks value against it.
+    function checkForm(formElement) {
+        
+        var els = document.getElementById("addForm").getElementsByTagName("input");
+        var errEls = document.getElementById("formSubmitMessage");
+        errEls.innerHTML = "";
+        
+        var formReturn  = true;
+        for (var i=0 ; i< els.length; i++) {
+            if(els[i].getAttribute("max")) {
+                var error = false;
+                if(isNaN(els[i].value)) {
+                    error = true;
+                } else {
+                    if (
+                        (parseInt(els[i].value) > parseInt(els[i].getAttribute("max"))) &&
+                        (parseInt(els[i].value) < 0)
+                        ) {
+                        error = true;
+                    }
+                }
+
+                if(error) {
+                    var elName = els[i].getAttribute("reading_name");
+                    errEls.innerHTML = errEls.innerHTML + "<BR>" + elName + ": Invalid Input " + els[i].value;
+                    formReturn = false;
+
+                }
+
+
+            } 
+        }
+        return formReturn;
+
+
+    }
+</script>
+<body>
+    <div class=menu>
+        <ul class="menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a class="active" href="add_device.html">Add New Device</a></li>
+            <li><a href="device_status.html">Device Status</a></li>
+            <li><a href="update_device.html">Update Device</a></li>
+            <li><a href="delete_device.html">Delete Device</a></li>
+
+
+        </ul>
+
+    </div>
+
+    
+        <P>
+        <div id="formSubmitMessage" style="color: #FF0000"></div>
+        <form id="addForm" method=post action="/process_add_device" onsubmit="return checkForm(this);">
+            
+    <div class="deviceAddGrid">
+        <div>Select Device to add</div>
+        <div>Enter Values</div>
+    <div>
+        
+    <select size=15 name="device_id" class="deviceAddFormSel">
+    <%data.forEach((item)=> {%>
+        <option onClick='showFeatures(<%=item["standard_device_id"]%>)' value=<%=item["standard_device_id"]%> 
+            <% if(selected[0]["id"]==item["standard_device_id"]){%> selected <%}%> >
+            <%=item["standard_device_name"]%> </option>
+    <%}); %>
+    
+    </select>
+
+    </div>
+    <div style="margin: 50px">
+        <% if(mapping.length > 0) { %>
+        
+            <table width="100%" border="1" cellpadding=10 cellspacing=0 color="#CCCCCC" margintop=5>
+                <TR><TD colspan=2><%=mapping[0]["standard_device_name"]%>
+                    <P><A target=_blank href=<%=mapping[0]["manufacturer_url"]%>>Visit Manufacturer's Site</A></P>
+                </TD></TR>
+
+            
+            <%mapping.forEach((item) => {%>
+                <TR><td><%=item.device_reading_type_name%> : </td><td>
+                    <%
+                    if(item.device_reading_type_name == "Off | On") { %>
+                            <input type="radio" name="id_<%=item.device_reading_type_id%>" id="id_<%=item.device_reading_type_id%>" value="On"  reading_name='<%=item.device_reading_type_name%>' checked> ON
+                            <input type="radio" name="id_<%=item.device_reading_type_id%>" id="id_<%=item.device_reading_type_id%>" value="Off" reading_name='<%=item.device_reading_type_name%>'> OFF
+                        <%
+                    } else if(item.device_reading_type_name == "Open | Close") { %>
+                            <input type="radio" name="id_<%=item.device_reading_type_id%>" id="id_<%=item.device_reading_type_id%>" value="Open" reading_name='<%=item.device_reading_type_name%>' checked> Open
+                            <input type="radio" name="id_<%=item.device_reading_type_id%>" id="id_<%=item.device_reading_type_id%>" value="Closed" reading_name='<%=item.device_reading_type_name%>'> Closed
+                        <%
+                    } else if(item.device_reading_type_name == "Smoke Detect") { %>
+                            <input type="radio" name="id_<%=item.device_reading_type_id%>" id="id_<%=item.device_reading_type_id%>" value="Smoke" reading_name='<%=item.device_reading_type_name%>'> Smoke
+                            <input type="radio" name="id_<%=item.device_reading_type_id%>" id="id_<%=item.device_reading_type_id%>" value="Clear" reading_name='<%=item.device_reading_type_name%>' checked> Clear
+                        <%
+                    } else if(item.device_reading_type_name == "Water Indicator") { %>
+                            <input type="radio" name="id_<%=item.device_reading_type_id%>" id="id_<%=item.device_reading_type_id%>" value="Water" reading_name='<%=item.device_reading_type_name%>'> Water
+                            <input type="radio" name="id_<%=item.device_reading_type_id%>" id="id_<%=item.device_reading_type_id%>" value="Clear" reading_name='<%=item.device_reading_type_name%>' checked> Clear
+                        <%
+           } else {%>
+                        <%
+                        
+                        var textsize = 5;
+                        var attr_html = "";
+                        var max_html = "";
+                        var eltype = "";
+                        
+                        if(item.device_reading_data_type == "t") {
+                            textsize = 20;
+                            attr_html = "maxlength";
+                            max_html = " ( max length: " + item.max_value + ") ";
+                            eltype = "type=TEXT"
+                        } else if(item.device_reading_data_type == "n") {
+                            attr_html = "max";
+                            max_html = " ( max: " + item.max_value + ") ";
+                            eltype = " type=NUMBER "
+                            textsize = 10;
+                            
+                        }
+                        %>
+                        
+                        <input <%=eltype %>  step=0.1 name="id_<%=item.device_reading_type_id%>" id="id_<%=item.device_reading_type_id%>" size=<%=textsize%> <%=attr_html%>=<%=item.max_value%> reading_name='<%=item.device_reading_type_name%>'> <%=item.device_reading_unit_short%>  
+                        <% 
+                        
+                        if(item.device_reading_unit_short != item.device_reading_unit_long) {%> (<%=item.device_reading_unit_long%>) <%}%>
+                        <%}%>
+                            -<%=max_html%>
+                </td></TR>
+    
+            <%})%>
+            <tr><td colspan=2 align=center><input type=submit value="Add New Device">
+            </td></tr>
+            </table>
+            <%}%>
+        
+    </div>
+<div></div>
+</div> 
+        </form>
+
+
+</body>

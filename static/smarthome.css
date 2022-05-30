@@ -1,0 +1,238 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Yanone+Kaffeesatz&display=swap');
+
+* { margin:0; padding:0; }
+
+#content { 
+  margin: 50px; 
+  font-size: 1.2em;
+  background-color: rgb(219, 219, 219);
+  
+
+
+} 
+a { text-decoration: none; }  
+ 
+.expandable {
+  background: #fff;
+  overflow: scroll;
+  color: #000;   
+  line-height: 28px;
+
+  transition: all .5s ease-in-out;
+  height: 0;
+  font-family: 'Yanone Kaffeesatz', sans-serif;
+  border-bottom: #cccccc solid 1px;
+  
+ }
+ 
+ .expandable:target {
+  height: auto;
+  scroll-behavior: smooth;
+  
+}
+ 
+body {
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  font-size: 1.1em;
+
+}
+.menu {
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  width: 1300px;
+  border-radius: 5px;
+  
+
+
+}
+.menu ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+.menu li {
+  float: left;
+  border-right:1px solid #bbb;
+}
+
+.menu li:last-child {
+  border-right: none;
+}
+
+.menu li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.menu li a:hover:not(.active) {
+  background-color: rgb(1, 34, 128);
+}
+
+.active {
+  background-color: #aa6204;
+}
+
+.mainbody {
+  background-image: url("/static/smart-home2.jpg");
+  width: 1300px;
+  height: 900px;
+  vertical-align: middle;
+  align-items: center;
+}
+
+.mainbodyText {
+      font-family: "Yanone Kaffeesatz", sans-serif;
+      font-size: 1.5em;
+      background-color: rgba(68, 67, 67, 0.5);
+      width: 600px;
+      text-align: left;
+      color: rgb(248, 221, 171);
+      
+}
+
+.deviceAddGrid {
+  display: inline-grid;
+  grid-template-columns: 2fr 3fr;
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  font-size: 1.25em;
+  grid-column-gap: 2em ;
+  align-items: flex-start;
+  
+}
+
+.deviceAddFormElm {
+
+  font-family: "Yanone Kaffeesatz", sans-serif;
+  font-size: 1.25em;
+  
+  
+}
+
+.deviceAddFormSel {
+
+  margin: 1.25em 1.25em;
+  text-indent: 1.25em;
+  font-size: 1.15em;
+}
+
+.about {
+  font-family: 'Yanone Kaffeesatz', sans-serif;
+  font-size: 1.2em;
+  
+}
+
+
+.deviceStatusHdr {
+  font-family: 'Yanone Kaffeesatz', sans-serif;
+  font-size: 1.2em;
+  font-weight: bold;
+  background-color: darkslategray;
+  color: #FFFFFF;
+}
+
+
+
+.deviceStatusItem {
+  font-family: 'Yanone Kaffeesatz', sans-serif;
+  background-color: #EEEEEE;
+  border-top: #FFFFFF solid 1px;
+  
+  
+}
+.deviceStatusItem:hover {
+  cursor: pointer;
+  
+  
+}
+/*
+
+Reference: http://richsomerfield.com/blog/2019-06-10-css-battery-indicator/
+
+*/
+
+.batteryContainer {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  
+  
+}
+
+.batteryOuter {
+  border-radius: 3px;
+  border: 1px solid #444;
+  padding: 1px;
+  width:100px;
+  height: 50px;
+  align-self: center;
+}
+
+.batteryBump {
+  border-radius: 2px;
+  background-color: #444;
+  margin: 2px;
+  width: 5px;
+  height: 25px;
+}
+
+#batteryLevel {
+  border-radius: 2px;
+  
+  height: 50px;
+}
+
+#deviceStatusGrid {
+  display: inline-grid;
+  grid-template-columns: 2fr 3fr;
+  grid-column-gap: 2em ;
+  align-items: flex-start;
+  
+  
+}
+
+#deviceReading {
+  margin: 50px; 
+  
+}
+
+.deviceStatusReadingMainGrid {
+  display: inline-grid;
+  grid-template-columns: 2fr 2fr;
+  gap: 1em;
+  
+
+
+
+}
+.deviceStatusReadingGrid {
+  border: #CCCCCC solid 1px; 
+  border-radius: 15px; 
+  box-shadow: 2px 2px #AAAAAA;
+  display: inline-grid; 
+  grid-template-columns: 1fr ;
+  align-content: center;
+  height: 200px;
+  align-items: center;
+  align-self: center;
+  vertical-align: text-top;
+  
+  
+  
+}
+
+.deviceStatusReadingGridItem {
+
+  margin: 15px;
+  text-align: center;
+
+}

@@ -1,0 +1,230 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/smarthome.css">
+    <title>Smart Home! - Update Device Status</title>
+</head>
+<script>
+
+    function checkForm() {
+        
+        var els = document.getElementById("addForm").getElementsByTagName("input");
+        var errEls = document.getElementById("formSubmitMessage");
+        errEls.innerHTML = "";
+
+        var formReturn = true;
+
+        for (var i = 0; i < els.length; i++) {
+            if (els[i].getAttribute("max")) {
+                var error = false;
+                if (isNaN(els[i].value)) {
+                    error = true;
+                } else {
+                    if (
+                        (parseInt(els[i].value) > parseInt(els[i].getAttribute("max"))) &&
+                        (parseInt(els[i].value) < 0)
+                    ) {
+                        error = true;
+                    }
+                }
+
+                if (error) {
+                    var elName = els[i].getAttribute("reading_name");
+                    errEls.innerHTML = errEls.innerHTML + "<BR>" + elName + ": Invalid Input " + els[i].value;
+                    formReturn = false;
+
+                }
+
+
+            }
+        }
+    return formReturn;
+    }
+    function updateReading(id) {
+        var elem = document.getElementById("deviceReading")
+        elem.innerHTML = "Loading Device Reading..."
+        var formElement = document.createElement("FORM");
+        formElement.name = "addForm";
+        formElement.id = "addForm";
+        formElement.method = "POST";
+        formElement.action = "update_device";
+        var table = document.createElement("table");
+        table.cellPadding = 15;
+        table.cellSpacing = 0;
+        table.margin = 10;
+        table.border = 1;
+        table.style.fontSize = "1.2em";
+    
+        var html = ""
+        fetch("http://localhost:8089/update_device.html?device_id=" + id).then(response => response.json()).then(
+            result => {
+
+
+            result.forEach((item) => {
+                var row = table.insertRow();
+                
+                
+                var input = document.createElement("INPUT");
+                var textNode = document.createTextNode(item["device_reading_type_name"] + ": ");
+
+                input.name = "id_" + item["device_reading_id"] + "_" + item["device_reading_data_type"];
+                input.id = "id_" + item["device_reading_id"] + "_" + item["device_reading_data_type"];
+                input.reading_name = item["device_reading_type_name"];
+
+                if(item["device_reading_data_type"] == "t") {
+                    input.type = "TEXT";
+                    input.value = item["text_reading"];
+                    input.maxlength = item["max_value"];
+                    var textCell = row.insertCell();
+                    textCell.style.padding = "15px";
+                    textCell.appendChild(textNode)
+                    var valueCell = row.insertCell();
+                    valueCell.appendChild(input);
+                    valueCell.style.padding = "15px";
+                    valueCell.style.fontSize = "1.2em";
+
+                } else if(item["device_reading_data_type"] == "n") {
+                    input.type = "NUMBER";
+                    input.step = 0.1;
+                    input.value = item["device_reading"];
+                    input.style.width = "55px";
+                    input.max = item["max_value"];
+                    var textCell = row.insertCell();
+                    textCell.style.padding = "15px";
+                    textCell.appendChild(textNode)
+                    var valueCell = row.insertCell();
+                    valueCell.appendChild(input);
+                    valueCell.style.padding = "15px";
+                    valueCell.style.fontSize = "1.2em";
+
+                } else if(item["device_reading_data_type"] == "b") {
+                    
+                    var input_true = document.createElement("INPUT") ;
+                    var input_false = document.createElement("INPUT") ;
+                    input_true.type = "RADIO";
+                    input_false.type = "RADIO";
+
+                    input_true.name = "id_" + item["device_reading_id"]  + "_" + item["device_reading_data_type"];;
+                    input_false.id = "id_" + item["device_reading_id"]  + "_" + item["device_reading_data_type"];;
+                    input_false.name = "id_" + item["device_reading_id"] + "_" + item["device_reading_data_type"];;
+                    input_true.id = "id_" + item["device_reading_id"] + "_" + item["device_reading_data_type"];;
+
+                    input_true.value = item["device_bool_true_val"];
+                    input_false.value = item["device_bool_false_val"];
+
+                    if (item["device_bool_true_val"] == item["text_reading"]) {
+                        input_true.checked = true;
+                    } else {
+                        input_false.checked = true;
+                    }
+                    
+                    var textCell = row.insertCell();
+                    
+                    textCell.style.padding = "15px";
+                    textCell.appendChild(textNode)
+                    var valueCell = row.insertCell();
+                    
+                    var trueText = document.createTextNode(item["device_bool_true_val"]);
+                    var falseText = document.createTextNode(item["device_bool_false_val"]);
+                    valueCell.appendChild(input_true);
+                    valueCell.appendChild(trueText);  
+                    valueCell.appendChild(input_false);
+                    valueCell.appendChild(falseText);  
+
+                
+                }
+
+            })
+
+
+                var device_id_hidden = document.createElement("INPUT");
+                device_id_hidden.type= "HIDDEN";
+                device_id_hidden.name = "device_id";
+                device_id_hidden.value = result[0]["device_id"];
+                formElement.appendChild(device_id_hidden);
+                //formElement.onsubmit = "return checkForm(this);"
+                formElement.onsubmit = function() {
+                    return checkForm() } ;
+
+                var submitButton = document.createElement("INPUT");
+                submitButton.type = "SUBMIT";
+                submitButton.value = "Update Device";
+                submitButton.style.fontSize = "1em";
+                submitButton.style.padding = "10px";
+                var submitRow = table.insertRow()
+                var submitCell = submitRow.insertCell() 
+                submitCell.style.padding = "15px";
+                submitCell.colSpan = 2;
+                submitCell.appendChild(submitButton);
+
+            }
+        ).then((err) => {
+            var elem = document.getElementById("deviceReading");
+            elem.innerHTML = "";
+            
+            formElement.appendChild(table);
+            elem.appendChild(formElement);
+        }
+
+        );
+
+    }
+</script>
+
+<body>
+    <div class=menu>
+        <ul class="menu">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="add_device.html">Add New Device</a></li>
+            <li><a href="device_status.html">Device Status</a></li>
+            <li><a class="active" href="update_device.html">Update Device</a></li>
+            <li><a href="delete_device.html">Delete Device</a></li>
+
+
+        </ul>
+
+    </div>
+    <P>
+                <P>
+                <div id="formSubmitMessage" style="color: #FF0000"></div>
+
+    <div id="deviceStatusGrid">
+        <div id="content">
+
+            <%Object.keys(data).forEach((item) => { 
+        console.log(data[item]);
+        
+        var device_ids = Object.keys(data[item]);
+        %>
+
+            <a href='#nav_<%=item%>'><span><%=item%> &#x21E2;</span></a>
+            <div class="expandable" id='nav_<%=item%>'>
+
+                <UL>
+
+                    <%for(var i=0; i< device_ids.length; i++) {
+                %>
+
+                    <LI>
+
+                        <div class="deviceStatusItem" onclick="updateReading(<%=device_ids[i]%>)"> &nbsp; &nbsp;
+                            <%=data[item][device_ids[i]]["location"]%></div>
+
+                    </LI>
+                    <% } %>
+
+                </UL>
+            </div>
+
+            <%})%>
+        </div>
+        <div id="deviceReading">
+            Select device on the left to be removed.
+        </div>
+    </div>
+
+
+</body>
